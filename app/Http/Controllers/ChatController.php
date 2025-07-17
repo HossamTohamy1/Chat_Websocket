@@ -21,6 +21,8 @@ class ChatController extends Controller
             'username' => 'required|string|max:255',           
         ]);
         $username = $request->username;
+        session(['username' => $username]);
+
 
             return view('chat')->with('username', $username);   
          }
@@ -30,8 +32,10 @@ class ChatController extends Controller
         $request->validate([
             'username' => 'required|string|max:255',       
             'msg' => 'required|string|max:255',  
+            'groupName' => 'nullable|string|max:255', 
+
         ]);
-       event(new chat($request->username, $request->msg));
+       event(new chat($request->username, $request->msg , $request->groupName));
         return response()->json($request->all());
     }
 
@@ -48,12 +52,30 @@ class ChatController extends Controller
         ]);
 
         $groups = session()->get('groups', []);
-
         $groups[] = $request->group_name;
-
         session(['groups' => $groups]);
 
-        return redirect()->route('group.page')->with('success', 'Group created successfully!');
+        return redirect()->route('group.page', ['group' => $request->group_name])
+                ->with('success', 'Group created and redirected!');
+
+            
     }
+
+     public function groupChatPage($groupName)
+  {
+            $groups = session()->get('groups', []);
+            
+            if (!in_array($groupName, $groups)) {
+                abort(403, 'Access denied. This group does not exist.');
+            }
+
+            $username = session('username');
+            if (!$username) {
+                return redirect()->route('user.login')->with('error', 'Please login first.');
+            }
+
+            return view('group-chat', compact('groupName','username'));
+        }
+
 
 }
