@@ -35,4 +35,25 @@ class ChatController extends Controller
         return response()->json($request->all());
     }
 
+    public function groupPage()
+    {
+        $groups = session()->get('groups', []);
+        return view('group', compact('groups'));
+    }
+
+    public function createGroup(Request $request)
+    {
+        $request->validate([
+            'group_name' => 'required|string|max:255',
+        ]);
+
+        $groups = session()->get('groups', []);
+
+        $groups[] = $request->group_name;
+
+        session(['groups' => $groups]);
+
+        return redirect()->route('group.page')->with('success', 'Group created successfully!');
+    }
+
 }
