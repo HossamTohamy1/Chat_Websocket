@@ -21,5 +21,4 @@ Route::get('/chat', [ChatController::class, 'NotFound'])->name('no.chat');
 Route::post('/chat', [ChatController::class, 'chat'])->name('Chat');
 Route::get('/group', [ChatController::class, 'groupPage'])->name('group.page');
 Route::post('/group/create', [ChatController::class, 'createGroup'])->name('group.create');
-Route::get('/chat', [ChatController::class, 'groupPage'])->name('group.page');
-Route::post('/group/create', [ChatController::class, 'createGroup'])->name('group.create');
+Route::get('/group/{group}', [ChatController::class, 'groupChatPage'])->name('group.chat');
